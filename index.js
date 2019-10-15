@@ -1,5 +1,7 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const Person = require('./models/person')
 
 const cors = require('cors')
 app.use(cors())
@@ -9,21 +11,20 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 const morgan = require('morgan')
 
-
-morgan.token('POST', function(req, res){
+morgan.token('POST', function (req, res) {
     return (
         `{name: ${req.body.name}, number: ${req.body.number}}`
     )
 })
 
 app.use(morgan('tiny', {
-    skip: function (req, res) { return req.method === 'POST'}
-  }))
+    skip: function (req, res) { return req.method === 'POST' }
+}))
 
 
 app.use(morgan(':method :status :res[content-length] - :response-time ms :POST ', {
-    skip: function (req, res) { return req.method !== 'POST'}
-  }))
+    skip: function (req, res) { return req.method !== 'POST' }
+}))
 
 let persons = [
     {
@@ -64,37 +65,33 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    if ((persons.filter(person => (person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase()))).length !== 0){
+    if ((persons.filter(person => (person.name.toLocaleLowerCase() === body.name.toLocaleLowerCase()))).length !== 0) {
         console.log("Name exists already")
         return response.status(400).json({
             error: 'name imust be unique, person already exists'
         })
     }
 
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: generateId(0,100000000),
-    }
+    })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson.toJSON())
+    })
 })
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
-})
+    Person.find({}).then(persons => {
+        res.json(persons.map(person => person.toJSON()))
+    });
+});
 
 app.get('api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+    Person.findById(request.params.id).then(person => {
+        response.json(person.toJSON())
+      })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -113,5 +110,5 @@ app.get('/api/info', (req, res) => {
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })
