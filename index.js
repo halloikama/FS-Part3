@@ -55,7 +55,7 @@ const generateId = (min, max) => {
 }
 
 
-app.post('api/persons', (request, response) => {
+app.post('/api/persons', (request, response) => {
     console.log(typeof request.method)
     const body = request.body
     if (!body.name || !body.number) {
@@ -82,7 +82,7 @@ app.post('api/persons', (request, response) => {
     response.json(person)
 })
 
-app.get('api/persons', (req, res) => {
+app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
 
@@ -97,14 +97,14 @@ app.get('api/persons/:id', (request, response) => {
     }
 })
 
-app.delete('api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
 
     response.status(204).end()
 })
 
-app.get('api/info', (req, res) => {
+app.get('/api/info', (req, res) => {
     const date = new Date()
     const length = persons.length
     console.log(length)
