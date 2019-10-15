@@ -3,6 +3,7 @@ const app = express()
 
 const cors = require('cors')
 app.use(cors())
+app.use(express.static('build'))
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -54,7 +55,7 @@ const generateId = (min, max) => {
 }
 
 
-app.post('/persons', (request, response) => {
+app.post('api/persons', (request, response) => {
     console.log(typeof request.method)
     const body = request.body
     if (!body.name || !body.number) {
@@ -81,11 +82,11 @@ app.post('/persons', (request, response) => {
     response.json(person)
 })
 
-app.get('/persons', (req, res) => {
+app.get('api/persons', (req, res) => {
     res.json(persons)
 })
 
-app.get('/persons/:id', (request, response) => {
+app.get('api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
 
@@ -96,14 +97,14 @@ app.get('/persons/:id', (request, response) => {
     }
 })
 
-app.delete('/persons/:id', (request, response) => {
+app.delete('api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
 
     response.status(204).end()
 })
 
-app.get('/info', (req, res) => {
+app.get('api/info', (req, res) => {
     const date = new Date()
     const length = persons.length
     console.log(length)
