@@ -1,11 +1,13 @@
-require('dotenv').config()
+
 const express = require('express')
 const app = express()
+require('dotenv').config()
+
 const Person = require('./models/person')
 
 const cors = require('cors')
 app.use(cors())
-app.use(express.static('build'))
+
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -26,34 +28,13 @@ app.use(morgan(':method :status :res[content-length] - :response-time ms :POST '
     skip: function (req, res) { return req.method !== 'POST' }
 }))
 
-let persons = [
-    {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": 1
-    },
-    {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": 2
-    },
-    {
-        "name": "Rick ",
-        "number": "5326879-5642",
-        "id": 3
-    }
-]
 
+app.use(express.static('build'))
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
 })
 
-const generateId = (min, max) => {
-    min = Math.ceil(min)
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min)) + min
-}
 
 
 app.post('/api/persons', (request, response) => {
@@ -108,7 +89,7 @@ app.get('/api/info', (req, res) => {
     res.send(`<p>Phonebook has ${length} entries</p> <p>${date} </p>`)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
