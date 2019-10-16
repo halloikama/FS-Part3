@@ -40,7 +40,7 @@ app.use(morgan(':method :status :res[content-length] - :response-time ms :POST '
 app.use(express.static('build'))
 
 app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>')
+  res.send('<h1>Hello World!</h1>')
 })
 
 
@@ -63,7 +63,7 @@ app.post('/api/persons', (request, response, next) => {
         .then(savedPerson => savedPerson.toJSON())
         .then(savenAndFormattedPerson => {
             response.json(savenAndFormattedPerson)
-        })    
+        })
         .catch(error => next(error))
 })
 
@@ -131,15 +131,15 @@ const errorHandler = (error, request, response, next) => {
     if (error.name === 'CastError' && error.kind === 'ObjectId') {
         return response.status(400).send({ error: 'malformatted id' })
     } else if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: error.message })
-    }
+        return response.status(400).json({ error: error.message }) 
+  }
 
-    next(error)
+  next(error)
 }
 
 app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
