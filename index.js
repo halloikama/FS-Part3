@@ -58,11 +58,12 @@ app.post('/api/persons', (request, response, next) => {
         number: body.number,
     })
 
-    person.save()
-        .then(savedPerson =>  savedPerson.toJSON())
-        .then(savedAndFormattedPerson => {
-            response.json(savedAndFormattedPerson)
-        })
+    person
+        .save()
+        .then(savedPerson => savedPerson.toJSON())
+        .then(savenAndFormattedPerson => {
+            response.json(savenAndFormattedPerson)
+        })    
         .catch(error => next(error))
 })
 
