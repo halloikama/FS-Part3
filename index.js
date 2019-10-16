@@ -13,6 +13,16 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 const morgan = require('morgan')
 
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+}
+
+app.use(requestLogger)
+
 morgan.token('POST', function (req, res) {
     return (
         `{name: ${req.body.name}, number: ${req.body.number}}`
@@ -70,9 +80,19 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.get('api/persons/:id', (request, response) => {
-    Person.findById(request.params.id).then(person => {
-        response.json(person.toJSON())
-      })
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person.toJSON())
+            } else {
+                response.status(404).end()
+            }
+
+        })
+        .catch(error => {
+            console.log(error);
+            response.status(400).send({ error: 'Malformatted id' })
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -89,7 +109,7 @@ app.get('/api/info', (req, res) => {
     res.send(`<p>Phonebook has ${length} entries</p> <p>${date} </p>`)
 })
 
-const PORT = process.env.PORT 
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
